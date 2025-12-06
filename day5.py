@@ -1,6 +1,4 @@
 # https://adventofcode.com/2025/day/5
-import random
-
 
 def part1(lines):
     ranges = []
@@ -52,7 +50,6 @@ def part2(lines):
     for c_range in ranges:
         res += c_range[1]-c_range[0]+1
     return res
-
 
 
 with (open("data/day5.txt") as f):

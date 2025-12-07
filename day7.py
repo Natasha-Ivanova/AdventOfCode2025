@@ -16,9 +16,22 @@ def part1(lines, s_index):
     
 
 
-
-def part2(lines):
-    pass
+def timeline_counter(lines, p_index, c_index):
+    while(c_index < len(lines) and p_index not in lines[c_index]):
+        c_index+=1
+    if c_index == len(lines):
+        return 1
+    c_index+=1
+    if p_index+1j*c_index not in results.keys():
+        res = timeline_counter(lines, p_index+1, c_index) + timeline_counter(lines, p_index-1, c_index)
+        results[p_index+1j*c_index] = res
+        return res
+    else:
+        return results[p_index+1j*c_index]
+    
+results = dict()
+def part2(lines, s_index):
+    return timeline_counter(lines, s_index, 0)
 
 
 
@@ -27,4 +40,4 @@ with open("data/day7.txt") as f:
     lines = [[i for i, c in enumerate(line.strip()) if c == "^"] for line in f.readlines()]
 
 print("Part 1: "+str(part1(lines, s)))
-print("Part 2: "+str(part2(lines)))
+print("Part 2: "+str(part2(lines, s)))

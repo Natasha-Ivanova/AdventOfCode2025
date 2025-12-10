@@ -1,6 +1,7 @@
 # https://adventofcode.com/2025/day/10
 import itertools
 from functools import reduce
+import z3
 
 def getMinButtons(state, buttons):
     state = sum([2**i  if k=='#' else 0 for i,k in enumerate(state)])
@@ -20,9 +21,27 @@ def part1(states, buttons):
     
 
 
-def part2(state, buttons, joltage):
-    pass
-    
+def part2(buttons, joltages):
+    res = 0
+    for i, button_set in enumerate(buttons):
+        joltage = joltages[i]
+        m = [[j in b for b in button_set] for j in range(len(joltage))]
+        c = [1] * len(button_set)
+        z = z3.Optimize()
+        vars = [z3.Int(f'x{i}') for i in range(len(button_set))]
+        for i in range(len(button_set)):
+            z.add(vars[i] >=0)
+        for i in range(len(joltage)):
+            z.add(sum([vars[j] for j,b in enumerate(button_set) if i in b]) == joltage[i])
+        
+        z.minimize(sum(vars))
+        assert z.check() == z3.sat
+        
+        m = z.model()
+        for v in vars:
+            res += m[v].as_long()
+    return int(res)
+
 
 
 with open("data/day10.txt") as f:
@@ -39,4 +58,4 @@ with open("data/day10.txt") as f:
         
 
 print("Part 1: " + str(part1(states, buttons)))
-print("Part 2: " + str(part2(states, buttons, joltages)))
+print("Part 2: " + str(part2(buttons, joltages)))
